@@ -3,8 +3,8 @@ import { useTimer } from '@/context/TimerContext';
 
 export default function TimerControls() {
   const { 
-    minutes, 
-    setMinutes, 
+    durationSeconds,
+    setDurationSeconds,
     isPlaying, 
     togglePlayPause, 
     resetTimer, 
@@ -14,6 +14,25 @@ export default function TimerControls() {
     toggleFullscreen,
     timerDimensions
   } = useTimer();
+
+  // Format duration for display (MM:SS)
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Handle duration change with 5-second increments
+  const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Get value as number
+    const value = parseInt(e.target.value, 10);
+    
+    // Round to nearest 5 seconds
+    const roundedValue = Math.round(value / 5) * 5;
+    
+    // Update context
+    setDurationSeconds(roundedValue);
+  };
 
   // Font categories for dropdown
   const fontCategories = {
@@ -45,15 +64,24 @@ export default function TimerControls() {
 
   // Handle style changes
   const handleFontSizeChange = (size: number) => {
-    setTimerStyle({ ...timerStyle, fontSize: size });
+    setTimerStyle({
+      ...timerStyle,
+      fontSize: size
+    });
   };
 
   const handleFontFamilyChange = (family: string) => {
-    setTimerStyle({ ...timerStyle, fontFamily: family });
+    setTimerStyle({
+      ...timerStyle,
+      fontFamily: family
+    });
   };
 
   const handleBackgroundOpacityChange = (opacity: number) => {
-    setTimerStyle({ ...timerStyle, backgroundOpacity: opacity });
+    setTimerStyle({
+      ...timerStyle,
+      backgroundOpacity: opacity
+    });
   };
 
   const hasVideo = !!videoId;
@@ -61,20 +89,28 @@ export default function TimerControls() {
   return (
     <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
       <div className="flex flex-col space-y-6">
-        {/* Minutes Input */}
+        {/* Duration Slider */}
         <div>
-          <label htmlFor="minutes" className="block mb-1 font-medium text-gray-300">
-            Timer Duration (minutes):
+          <label htmlFor="duration" className="block mb-1 font-medium text-gray-300">
+            Timer Duration: {formatDuration(durationSeconds)}
           </label>
-          <input
-            type="number"
-            id="minutes"
-            min="1"
-            max="60"
-            value={minutes}
-            onChange={(e) => setMinutes(Number(e.target.value))}
-            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
-          />
+          <div className="flex items-center space-x-2">
+            <input
+              type="range"
+              id="duration"
+              min="5"
+              max="3600"
+              step="5"
+              value={durationSeconds}
+              onChange={handleDurationChange}
+              className="flex-grow accent-red-500"
+            />
+          </div>
+          <div className="flex justify-between text-xs text-gray-400 mt-1">
+            <span>5s</span>
+            <span>30m</span>
+            <span>60m</span>
+          </div>
         </div>
 
         {/* Play/Pause and Reset Buttons */}
@@ -209,6 +245,7 @@ export default function TimerControls() {
           </div>
           <div className="p-4 mt-2 border border-gray-700 rounded bg-gray-900 text-center">
             <p className="text-sm">Drag the timer on the video to reposition</p>
+            <p className="text-sm mt-1">Use corner handles to resize</p>
           </div>
         </div>
       </div>

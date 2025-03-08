@@ -14,13 +14,13 @@ interface TimerContextType {
   setYoutubeUrl: (url: string) => void;
   
   // Timer state
-  minutes: number;
+  durationSeconds: number;
   timeRemaining: number;
   isPlaying: boolean;
   timerStyle: TimerStyle;
   
   // Actions
-  setMinutes: (minutes: number) => void;
+  setDurationSeconds: (seconds: number) => void;
   togglePlayPause: () => void;
   resetTimer: () => void;
   setTimerStyle: (style: TimerStyle) => void;
@@ -37,27 +37,29 @@ interface TimerContextType {
 const TimerContext = createContext<TimerContextType | undefined>(undefined);
 
 export function TimerProvider({ children }: { children: React.ReactNode }) {
-  // Video and timer state
+  // Video state
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [videoId, setVideoId] = useState('');
-  const [minutes, setMinutes] = useState(5);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(0);
   const [embedError, setEmbedError] = useState(false);
+  
+  // Timer state - changed to use seconds as the base unit
+  const [durationSeconds, setDurationSeconds] = useState(120); // Default 2 minutes
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  
+  // Other existing state
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [timerDimensions, setTimerDimensions] = useState<TimerDimensions>({
+    width: 0,
+    height: 0
+  });
   
   // Timer styling
   const [timerStyle, setTimerStyle] = useState<TimerStyle>({
     fontSize: 24,
     fontFamily: 'sans-serif',
     backgroundOpacity: 70,
-    position: { x: 50, y: 10 } // Start centered at top
-  });
-  
-  // Timer element dimensions
-  const [timerDimensions, setTimerDimensions] = useState<TimerDimensions>({
-    width: 0,
-    height: 0
+    position: { x: 50, y: 10 }
   });
 
   /**
@@ -74,8 +76,8 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     if (match && match[1]) {
       const newVideoId = match[1];
       setVideoId(newVideoId);
-      // Initialize timeRemaining with selected minutes when a video is loaded
-      setTimeRemaining(minutes * 60);
+      // Initialize timeRemaining with selected duration when a video is loaded
+      setTimeRemaining(durationSeconds);
     } else {
       setVideoId('');
     }
@@ -89,7 +91,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     
     if (!isPlaying) {
       // Start the timer
-      setTimeRemaining(minutes * 60);
+      setTimeRemaining(durationSeconds);
       setIsPlaying(true);
     } else {
       // Pause the timer
@@ -102,7 +104,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
    */
   const resetTimer = () => {
     setIsPlaying(false);
-    setTimeRemaining(minutes * 60);
+    setTimeRemaining(durationSeconds);
   };
 
   /**
@@ -112,12 +114,12 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     setIsFullscreen(!isFullscreen);
   };
 
-  // Update timeRemaining when minutes changes
+  // Update timeRemaining when duration changes and not playing
   useEffect(() => {
     if (!isPlaying) {
-      setTimeRemaining(minutes * 60);
+      setTimeRemaining(durationSeconds);
     }
-  }, [minutes, isPlaying]);
+  }, [durationSeconds, isPlaying]);
 
   // Timer countdown effect
   useEffect(() => {
@@ -144,12 +146,13 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     embedError,
     setYoutubeUrl: handleUrlChange,
     
-    minutes,
+    // Use seconds-based duration instead of minutes
+    durationSeconds,
+    setDurationSeconds,
     timeRemaining,
     isPlaying,
     timerStyle,
     
-    setMinutes,
     togglePlayPause,
     resetTimer,
     setTimerStyle,
@@ -157,7 +160,6 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     isFullscreen,
     toggleFullscreen,
     
-    // Add dimension tracking to context
     timerDimensions,
     setTimerDimensions
   };

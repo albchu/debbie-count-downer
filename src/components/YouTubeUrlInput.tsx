@@ -7,7 +7,7 @@ interface YouTubeUrlInputProps {
 
 const YouTubeUrlInput: React.FC<YouTubeUrlInputProps> = ({ youtubeUrl, setYoutubeUrl }) => {
   return (
-    <div className="bg-gray-800 rounded-lg p-6 shadow-lg mb-8 inline-block min-w-[150px] max-w-full">
+    <div className="bg-gray-800 rounded-lg p-6 mb-8 inline-block min-w-[150px] max-w-full">
         <input
           type="text"
           id="youtube-url"

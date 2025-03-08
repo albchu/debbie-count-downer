@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import YouTubePlayer from '@/components/YouTubePlayer';
 import CountdownTimer from '@/components/CountdownTimer';
 import ControlPanel from '@/components/ControlPanel';
-import { TimerPosition, TimerStyle } from '@/types/timer';
+import { TimerStyle } from '@/types/timer';
 
 export default function Home() {
   const [youtubeUrl, setYoutubeUrl] = useState('');
@@ -14,8 +14,7 @@ export default function Home() {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [embedError, setEmbedError] = useState(false);
   
-  // Timer style and position controls
-  const [timerPosition, setTimerPosition] = useState<TimerPosition>('topRight');
+  // Timer style control
   const [timerStyle, setTimerStyle] = useState<TimerStyle>({
     fontSize: 24,
     fontFamily: 'sans-serif',
@@ -92,8 +91,6 @@ export default function Home() {
           onPlayPause={togglePlayPause}
           onReset={resetTimer}
           hasVideo={!!videoId}
-          timerPosition={timerPosition}
-          onTimerPositionChange={setTimerPosition}
           timerStyle={timerStyle}
           onTimerStyleChange={setTimerStyle}
         />
@@ -108,7 +105,6 @@ export default function Home() {
               {(isPlaying || timeRemaining > 0) && (
                 <CountdownTimer
                   timeRemaining={timeRemaining}
-                  position={timerPosition}
                   style={timerStyle}
                   onStyleChange={setTimerStyle}
                 />

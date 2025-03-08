@@ -1,4 +1,4 @@
-import { TimerPosition, TimerStyle } from '@/types/timer';
+import { TimerStyle } from '@/types/timer';
 import { useId } from 'react';
 
 interface ControlPanelProps {
@@ -10,8 +10,6 @@ interface ControlPanelProps {
   onPlayPause: () => void;
   onReset: () => void;
   hasVideo: boolean;
-  timerPosition: TimerPosition;
-  onTimerPositionChange: (position: TimerPosition) => void;
   timerStyle: TimerStyle;
   onTimerStyleChange: (style: TimerStyle) => void;
 }
@@ -25,20 +23,10 @@ export default function ControlPanel({
   onPlayPause,
   onReset,
   hasVideo,
-  timerPosition,
-  onTimerPositionChange,
   timerStyle,
   onTimerStyleChange
 }: ControlPanelProps) {
   const selectId = useId();
-
-  const positions: { value: TimerPosition; label: string }[] = [
-    { value: 'center', label: 'Center' },
-    { value: 'topLeft', label: 'Top Left' },
-    { value: 'topRight', label: 'Top Right' },
-    { value: 'bottomLeft', label: 'Bottom Left' },
-    { value: 'bottomRight', label: 'Bottom Right' }
-  ];
 
   // Expanded font families list with categorization
   const fontFamilies = [
@@ -170,19 +158,12 @@ export default function ControlPanel({
           <h2 className="text-lg font-semibold text-white border-b border-gray-700 pb-2">Timer Display</h2>
           
           <div className="flex flex-col">
-            <label htmlFor="font-size" className="mb-1 font-medium text-gray-300">Font Size:</label>
-            <div className="flex items-center space-x-2">
-              <input
-                type="range"
-                id="font-size"
-                min="12"
-                max="72"
-                value={timerStyle.fontSize}
-                onChange={(e) => handleFontSizeChange(parseInt(e.target.value))}
-                className="flex-grow accent-red-500"
-              />
-              <span className="font-medium text-white">{timerStyle.fontSize}px</span>
-            </div>
+            <p className="text-sm text-gray-300 mb-3">
+              <span className="font-medium">Resize:</span> Drag the bottom-right corner of the timer to resize it
+            </p>
+            <p className="text-sm text-gray-300 mb-3">
+              <span className="font-medium">Reposition:</span> Drag the timer to move it around on the video
+            </p>
           </div>
 
           <div className="flex flex-col">

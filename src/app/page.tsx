@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import YouTubePlayer from '@/components/YouTubePlayer';
 import CountdownTimer from '@/components/CountdownTimer';
 import ControlPanel from '@/components/ControlPanel';
+import FullscreenView from '@/components/FullscreenView';
+import FullscreenButton from '@/components/FullscreenButton';
 import { TimerStyle } from '@/types/timer';
 
 export default function Home() {
@@ -14,6 +16,7 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [embedError, setEmbedError] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   // Timer styling
   const [timerStyle, setTimerStyle] = useState<TimerStyle>({
@@ -64,6 +67,13 @@ export default function Home() {
     setTimeRemaining(minutes * 60);
   };
 
+  /**
+   * Toggle fullscreen mode
+   */
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
   // Timer countdown effect
   useEffect(() => {
     if (!isPlaying || timeRemaining <= 0) return;
@@ -82,6 +92,19 @@ export default function Home() {
     // Cleanup interval on unmount or state change
     return () => clearInterval(timer);
   }, [isPlaying, timeRemaining]);
+
+  // If in fullscreen mode, render the fullscreen view
+  if (isFullscreen && videoId) {
+    return (
+      <FullscreenView
+        videoId={videoId}
+        timeRemaining={timeRemaining}
+        timerStyle={timerStyle}
+        onTimerStyleChange={setTimerStyle}
+        onExit={toggleFullscreen}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-8 flex flex-col items-center">
@@ -117,6 +140,13 @@ export default function Home() {
                   timeRemaining={timeRemaining}
                   style={timerStyle}
                   onStyleChange={setTimerStyle}
+                />
+              )}
+              
+              {!embedError && (
+                <FullscreenButton
+                  onClick={toggleFullscreen}
+                  isFullscreen={false}
                 />
               )}
             </YouTubePlayer>

@@ -1,83 +1,59 @@
-import { useEffect, useCallback } from 'react';
-import { TimerStyle } from '@/types/timer';
+import { useState, useEffect } from 'react';
 import CountdownTimer from './CountdownTimer';
-import FullscreenButton from './FullscreenButton';
+import { useTimer } from '@/context/TimerContext';
 
-interface FullscreenViewProps {
-  videoId: string;
-  timeRemaining: number;
-  timerStyle: TimerStyle;
-  onTimerStyleChange: (style: TimerStyle) => void;
-  onExit: () => void;
-}
+export default function FullscreenView() {
+  const { videoId, toggleFullscreen } = useTimer();
+  const [showExitButton, setShowExitButton] = useState(true);
 
-export default function FullscreenView({ 
-  videoId, 
-  timeRemaining, 
-  timerStyle, 
-  onTimerStyleChange,
-  onExit 
-}: FullscreenViewProps) {
-  // Create a handler that will be used in both the effect and directly
-  const handleEscapeKey = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      e.preventDefault(); // Prevent default behavior
-      e.stopPropagation(); // Stop event from propagating
-      onExit();
-    }
-  }, [onExit]);
-
-  // Enhanced escape key listener with capture phase
+  // Hide exit button after 3 seconds
   useEffect(() => {
-    // Using the capture phase to catch the event before it reaches the iframe
-    document.addEventListener('keydown', handleEscapeKey, true);
-    window.addEventListener('keydown', handleEscapeKey, true);
+    const timer = setTimeout(() => {
+      setShowExitButton(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Show exit button on mouse movement
+  const handleMouseMove = () => {
+    setShowExitButton(true);
     
-    return () => {
-      document.removeEventListener('keydown', handleEscapeKey, true);
-      window.removeEventListener('keydown', handleEscapeKey, true);
-    };
-  }, [handleEscapeKey]);
+    // Hide again after 3 seconds
+    const timer = setTimeout(() => {
+      setShowExitButton(false);
+    }, 3000);
+    
+    return () => clearTimeout(timer);
+  };
 
   return (
     <div 
-      className="fixed inset-0 z-50 bg-black"
-      // Add an inline handler as well for better coverage
-      onKeyDown={(e) => {
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          onExit();
-        }
-      }}
-      // Make sure the div can receive keyboard focus
-      tabIndex={0}
+      className="fixed inset-0 bg-black flex items-center justify-center" 
+      onMouseMove={handleMouseMove}
     >
-      {/* Simple iframe that takes up the full viewport */}
-      <iframe
-        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&fs=0`}
-        className="w-full h-full border-0"
-        allowFullScreen
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      ></iframe>
-      
-      {/* Timer overlay */}
-      {timeRemaining > 0 && (
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="pointer-events-auto">
-            <CountdownTimer
-              timeRemaining={timeRemaining}
-              style={timerStyle}
-              onStyleChange={onTimerStyleChange}
-            />
-          </div>
-        </div>
-      )}
-      
-      {/* Fullscreen exit button with clear exit instructions */}
-      <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-black bg-opacity-50 px-3 py-1 rounded-full text-white text-sm">
-        <span>Press ESC to exit</span>
-        <FullscreenButton onClick={onExit} isFullscreen={true} />
+      {/* YouTube embed */}
+      <div className="w-full h-full relative">
+        <iframe
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&iv_load_policy=3`}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="w-full h-full"
+        ></iframe>
+        
+        {/* Overlay the timer */}
+        <CountdownTimer />
       </div>
+      
+      {/* Exit button */}
+      <button
+        onClick={toggleFullscreen}
+        className={`fixed top-4 right-4 bg-black bg-opacity-50 hover:bg-opacity-80 text-white px-4 py-2 rounded transition-opacity duration-300 z-50 ${
+          showExitButton ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        Exit Fullscreen
+      </button>
     </div>
   );
 } 

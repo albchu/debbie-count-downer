@@ -1,29 +1,20 @@
-import { TimerStyle } from '@/types/timer';
 import FontDropdown from './FontDropdown';
+import { useTimer } from '@/context/TimerContext';
 
-interface TimerControlsProps {
-  minutes: number;
-  onMinutesChange: (minutes: number) => void;
-  isPlaying: boolean;
-  onPlayPause: () => void;
-  onReset: () => void;
-  hasVideo: boolean;
-  timerStyle: TimerStyle;
-  onTimerStyleChange: (style: TimerStyle) => void;
-  onReady?: () => void;
-}
+export default function TimerControls() {
+  const { 
+    minutes, 
+    setMinutes, 
+    isPlaying, 
+    togglePlayPause, 
+    resetTimer, 
+    videoId, 
+    timerStyle, 
+    setTimerStyle, 
+    toggleFullscreen,
+    timerDimensions
+  } = useTimer();
 
-export default function TimerControls({
-  minutes,
-  onMinutesChange,
-  isPlaying,
-  onPlayPause,
-  onReset,
-  hasVideo,
-  timerStyle,
-  onTimerStyleChange,
-  onReady
-}: TimerControlsProps) {
   // Font categories for dropdown
   const fontCategories = {
     'System': [
@@ -54,16 +45,18 @@ export default function TimerControls({
 
   // Handle style changes
   const handleFontSizeChange = (size: number) => {
-    onTimerStyleChange({ ...timerStyle, fontSize: size });
+    setTimerStyle({ ...timerStyle, fontSize: size });
   };
 
   const handleFontFamilyChange = (family: string) => {
-    onTimerStyleChange({ ...timerStyle, fontFamily: family });
+    setTimerStyle({ ...timerStyle, fontFamily: family });
   };
 
   const handleBackgroundOpacityChange = (opacity: number) => {
-    onTimerStyleChange({ ...timerStyle, backgroundOpacity: opacity });
+    setTimerStyle({ ...timerStyle, backgroundOpacity: opacity });
   };
+
+  const hasVideo = !!videoId;
 
   return (
     <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
@@ -79,7 +72,7 @@ export default function TimerControls({
             min="1"
             max="60"
             value={minutes}
-            onChange={(e) => onMinutesChange(Number(e.target.value))}
+            onChange={(e) => setMinutes(Number(e.target.value))}
             className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
           />
         </div>
@@ -87,7 +80,7 @@ export default function TimerControls({
         {/* Play/Pause and Reset Buttons */}
         <div className="flex space-x-4">
           <button
-            onClick={onPlayPause}
+            onClick={togglePlayPause}
             disabled={!hasVideo}
             className={`flex-1 px-4 py-2 rounded font-medium flex items-center justify-center ${
               hasVideo
@@ -122,7 +115,7 @@ export default function TimerControls({
             )}
           </button>
           <button
-            onClick={onReset}
+            onClick={resetTimer}
             disabled={!hasVideo}
             className={`flex-1 px-4 py-2 rounded font-medium flex items-center justify-center ${
               hasVideo
@@ -141,9 +134,9 @@ export default function TimerControls({
           </button>
         </div>
 
-        {/* New Ready Button for entering fullscreen mode */}
+        {/* Ready Button for entering fullscreen mode */}
         <button
-          onClick={onReady}
+          onClick={toggleFullscreen}
           disabled={!hasVideo}
           className={`w-full px-4 py-3 rounded font-medium flex items-center justify-center ${
             hasVideo
@@ -199,6 +192,24 @@ export default function TimerControls({
             onChange={handleFontFamilyChange}
             fontCategories={fontCategories}
           />
+        </div>
+
+        {/* Position and Size Information */}
+        <div>
+          <label className="block mb-1 font-medium text-gray-300">
+            Timer Position & Size:
+          </label>
+          <div className="flex justify-between text-sm text-gray-400 mb-1">
+            <span>X: {Math.round(timerStyle.position?.x || 50)}%</span>
+            <span>Y: {Math.round(timerStyle.position?.y || 10)}%</span>
+          </div>
+          <div className="mt-1 flex justify-between text-sm text-gray-400">
+            <span>Width: {Math.round(timerDimensions.width)}px</span>
+            <span>Height: {Math.round(timerDimensions.height)}px</span>
+          </div>
+          <div className="p-4 mt-2 border border-gray-700 rounded bg-gray-900 text-center">
+            <p className="text-sm">Drag the timer on the video to reposition</p>
+          </div>
         </div>
       </div>
     </div>

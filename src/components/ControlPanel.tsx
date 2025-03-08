@@ -1,33 +1,9 @@
-import { TimerStyle } from "@/types/timer";
-import TimerControls from "./TimerControls";
+import TimerControls from './TimerControls';
+import { useTimer } from '@/context/TimerContext';
 
-interface ControlPanelProps {
-  youtubeUrl: string;
-  onUrlChange: (url: string) => void;
-  minutes: number;
-  onMinutesChange: (minutes: number) => void;
-  isPlaying: boolean;
-  onPlayPause: () => void;
-  onReset: () => void;
-  hasVideo: boolean;
-  timerStyle: TimerStyle;
-  onTimerStyleChange: (style: TimerStyle) => void;
-  onReady?: () => void;
-}
+export default function ControlPanel() {
+  const { youtubeUrl, setYoutubeUrl, videoId } = useTimer();
 
-export default function ControlPanel({
-  youtubeUrl,
-  onUrlChange,
-  minutes,
-  onMinutesChange,
-  isPlaying,
-  onPlayPause,
-  onReset,
-  hasVideo,
-  timerStyle,
-  onTimerStyleChange,
-  onReady
-}: ControlPanelProps) {
   return (
     <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
       <div className="mb-6">
@@ -42,7 +18,7 @@ export default function ControlPanel({
           id="youtube-url"
           placeholder="Paste a YouTube URL"
           value={youtubeUrl}
-          onChange={(e) => onUrlChange(e.target.value)}
+          onChange={(e) => setYoutubeUrl(e.target.value)}
           className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
         />
         <p className="mt-1 text-sm text-gray-400">
@@ -50,17 +26,7 @@ export default function ControlPanel({
         </p>
       </div>
 
-        <TimerControls
-          minutes={minutes}
-          onMinutesChange={onMinutesChange}
-          isPlaying={isPlaying}
-          onPlayPause={onPlayPause}
-          onReset={onReset}
-          hasVideo={hasVideo}
-          timerStyle={timerStyle}
-          onTimerStyleChange={onTimerStyleChange}
-          onReady={onReady}
-        />
+      <TimerControls />
     </div>
   );
 }

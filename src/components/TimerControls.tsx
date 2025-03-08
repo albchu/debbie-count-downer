@@ -10,6 +10,7 @@ interface TimerControlsProps {
   hasVideo: boolean;
   timerStyle: TimerStyle;
   onTimerStyleChange: (style: TimerStyle) => void;
+  onReady?: () => void;
 }
 
 export default function TimerControls({
@@ -20,7 +21,8 @@ export default function TimerControls({
   onReset,
   hasVideo,
   timerStyle,
-  onTimerStyleChange
+  onTimerStyleChange,
+  onReady
 }: TimerControlsProps) {
   // Font categories for dropdown
   const fontCategories = {
@@ -138,6 +140,22 @@ export default function TimerControls({
             Reset
           </button>
         </div>
+
+        {/* New Ready Button for entering fullscreen mode */}
+        <button
+          onClick={onReady}
+          disabled={!hasVideo}
+          className={`w-full px-4 py-3 rounded font-medium flex items-center justify-center ${
+            hasVideo
+              ? 'bg-blue-500 hover:bg-blue-600 text-white'
+              : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+          }`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+          </svg>
+          Ready - Enter Fullscreen
+        </button>
 
         {/* Font Size */}
         <div>

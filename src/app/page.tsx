@@ -6,7 +6,6 @@ import YouTubePlayer from '@/components/YouTubePlayer';
 import CountdownTimer from '@/components/CountdownTimer';
 import ControlPanel from '@/components/ControlPanel';
 import FullscreenView from '@/components/FullscreenView';
-import FullscreenButton from '@/components/FullscreenButton';
 import { TimerStyle } from '@/types/timer';
 
 export default function Home() {
@@ -38,7 +37,10 @@ export default function Home() {
     const match = url.match(regex);
     
     if (match && match[1]) {
-      setVideoId(match[1]);
+      const newVideoId = match[1];
+      setVideoId(newVideoId);
+      // Initialize timeRemaining with selected minutes when a video is loaded
+      setTimeRemaining(minutes * 60);
     } else {
       setVideoId('');
     }
@@ -75,6 +77,13 @@ export default function Home() {
     setIsFullscreen(!isFullscreen);
   };
 
+  // Update timeRemaining when minutes changes
+  useEffect(() => {
+    if (!isPlaying) {
+      setTimeRemaining(minutes * 60);
+    }
+  }, [minutes, isPlaying]);
+
   // Timer countdown effect
   useEffect(() => {
     if (!isPlaying || timeRemaining <= 0) return;
@@ -109,7 +118,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-8 flex flex-col items-center">
-      <header className="w-full max-w-3xl mb-8">
+      <header className="w-full max-w-5xl mb-8">
         <div className="flex items-center justify-center">
           {/* Using the favicon SVG directly */}
           <Image
@@ -120,50 +129,52 @@ export default function Home() {
             className="mr-4"
           />
           <h1 className="text-4xl font-bold text-white inline-flex items-baseline">
-            <span className="text-cyan-700">Count</span>
-            <span className="text-violet-400">downer</span>
+            <span className="text-red-500">Count</span>
+            <span>downer</span>
           </h1>
         </div>
       </header>
 
-      <main className="w-full max-w-3xl flex flex-col gap-8">
-        <ControlPanel
-          youtubeUrl={youtubeUrl}
-          onUrlChange={handleUrlChange}
-          minutes={minutes}
-          onMinutesChange={setMinutes}
-          isPlaying={isPlaying}
-          onPlayPause={togglePlayPause}
-          onReset={resetTimer}
-          hasVideo={!!videoId}
-          timerStyle={timerStyle}
-          onTimerStyleChange={setTimerStyle}
-        />
-
-        {videoId && (
-          <div className="w-full relative bg-black rounded-lg overflow-hidden shadow-2xl">
-            <YouTubePlayer
-              videoId={videoId}
-              onError={() => setEmbedError(true)}
-              embedError={embedError}
-            >
-              {(isPlaying || timeRemaining > 0) && (
-                <CountdownTimer
-                  timeRemaining={timeRemaining}
-                  style={timerStyle}
-                  onStyleChange={setTimerStyle}
-                />
-              )}
-              
-              {!embedError && (
-                <FullscreenButton
-                  onClick={toggleFullscreen}
-                  isFullscreen={false}
-                />
-              )}
-            </YouTubePlayer>
+      <main className="w-full max-w-5xl">
+        {/* Responsive container for control panel and video */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Control panel */}
+          <div>
+            <ControlPanel
+              youtubeUrl={youtubeUrl}
+              onUrlChange={handleUrlChange}
+              minutes={minutes}
+              onMinutesChange={setMinutes}
+              isPlaying={isPlaying}
+              onPlayPause={togglePlayPause}
+              onReset={resetTimer}
+              hasVideo={!!videoId}
+              timerStyle={timerStyle}
+              onTimerStyleChange={setTimerStyle}
+              onReady={toggleFullscreen}
+            />
           </div>
-        )}
+          
+          {/* Video preview */}
+          {videoId && (
+            <div className="flex items-start">
+              <div className="w-full relative bg-black rounded-lg overflow-hidden shadow-2xl">
+                <YouTubePlayer
+                  videoId={videoId}
+                  onError={() => setEmbedError(true)}
+                  embedError={embedError}
+                >
+                  {/* Always show timer when video is loaded */}
+                  <CountdownTimer
+                    timeRemaining={timeRemaining}
+                    style={timerStyle}
+                    onStyleChange={setTimerStyle}
+                  />
+                </YouTubePlayer>
+              </div>
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );

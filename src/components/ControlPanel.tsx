@@ -12,6 +12,7 @@ interface ControlPanelProps {
   hasVideo: boolean;
   timerStyle: TimerStyle;
   onTimerStyleChange: (style: TimerStyle) => void;
+  onReady?: () => void;
 }
 
 export default function ControlPanel({
@@ -25,6 +26,7 @@ export default function ControlPanel({
   hasVideo,
   timerStyle,
   onTimerStyleChange,
+  onReady
 }: ControlPanelProps) {
   return (
     <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
@@ -48,16 +50,17 @@ export default function ControlPanel({
         </p>
       </div>
 
-      <TimerControls
-        minutes={minutes}
-        onMinutesChange={onMinutesChange}
-        isPlaying={isPlaying}
-        onPlayPause={onPlayPause}
-        onReset={onReset}
-        hasVideo={hasVideo}
-        timerStyle={timerStyle}
-        onTimerStyleChange={onTimerStyleChange}
-      />
+        <TimerControls
+          minutes={minutes}
+          onMinutesChange={onMinutesChange}
+          isPlaying={isPlaying}
+          onPlayPause={onPlayPause}
+          onReset={onReset}
+          hasVideo={hasVideo}
+          timerStyle={timerStyle}
+          onTimerStyleChange={onTimerStyleChange}
+          onReady={onReady}
+        />
     </div>
   );
 }

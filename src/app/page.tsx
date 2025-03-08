@@ -110,6 +110,7 @@ export default function Home() {
                   timeRemaining={timeRemaining}
                   position={timerPosition}
                   style={timerStyle}
+                  onStyleChange={setTimerStyle}
                 />
               )}
             </YouTubePlayer>

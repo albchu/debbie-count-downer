@@ -19,6 +19,7 @@ export default function CountdownTimer({ timeRemaining, position, style, onStyle
   // References
   const timerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
   
   // Track mouse offset for smooth dragging
   const dragStartPosRef = useRef({ mouseX: 0, mouseY: 0, elemX: 0, elemY: 0 });
@@ -28,6 +29,21 @@ export default function CountdownTimer({ timeRemaining, position, style, onStyle
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Calculate optimal font size based on container dimensions
+  const calculateFontSize = (width: number, height: number) => {
+    // The "5" is approximate character count of "00:00"
+    const charCount = 5;
+    
+    // Calculate based on width (allowing for padding)
+    const widthBasedSize = (width - 16) / charCount * 1.6;
+    
+    // Calculate based on height (allowing for vertical padding)
+    const heightBasedSize = (height - 16) * 0.7;
+    
+    // Use the smaller of the two to ensure text fits
+    return Math.max(12, Math.min(200, Math.floor(Math.min(widthBasedSize, heightBasedSize))));
   };
 
   // Set initial position
@@ -64,6 +80,17 @@ export default function CountdownTimer({ timeRemaining, position, style, onStyle
     
     setCoords({ x, y });
   }, [position, size.width, size.height]);
+
+  // Update font size when dimensions change
+  useEffect(() => {
+    const newFontSize = calculateFontSize(size.width, size.height);
+    if (style.fontSize !== newFontSize) {
+      onStyleChange({
+        ...style,
+        fontSize: newFontSize
+      });
+    }
+  }, [size.width, size.height]);
 
   // Start dragging
   const handleTimerMouseDown = (e: React.MouseEvent) => {
@@ -131,21 +158,12 @@ export default function CountdownTimer({ timeRemaining, position, style, onStyle
       const deltaX = e.clientX - dragStartPosRef.current.mouseX;
       const deltaY = e.clientY - dragStartPosRef.current.mouseY;
       
-      // Calculate new size with constraints
-      const newWidth = Math.max(80, dragStartPosRef.current.elemX + deltaX);
-      const newHeight = Math.max(40, dragStartPosRef.current.elemY + deltaY);
+      // Calculate new size with constraints - increasing minimum size to allow for larger text
+      const newWidth = Math.max(100, dragStartPosRef.current.elemX + deltaX);
+      const newHeight = Math.max(50, dragStartPosRef.current.elemY + deltaY);
       
       // Set new size
       setSize({ width: newWidth, height: newHeight });
-      
-      // Update font size proportionally to height
-      const newFontSize = Math.max(12, Math.min(72, Math.floor(newHeight * 0.6)));
-      if (style.fontSize !== newFontSize) {
-        onStyleChange({
-          ...style,
-          fontSize: newFontSize
-        });
-      }
     }
   };
   
@@ -190,13 +208,16 @@ export default function CountdownTimer({ timeRemaining, position, style, onStyle
           userSelect: 'none',
           backgroundColor: `rgba(0, 0, 0, ${bgOpacity})`,
           textShadow: bgOpacity < 0.5 ? '0px 0px 2px rgba(0,0,0,0.8)' : 'none',
-          cursor: isDragging ? 'grabbing' : 'grab'
+          cursor: isDragging ? 'grabbing' : 'grab',
+          lineHeight: 1, // Prevent large line height with big font sizes
         }}
         onMouseDown={handleTimerMouseDown}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       >
-        {formatTime(timeRemaining)}
+        <div ref={textRef} className="text-center whitespace-nowrap" style={{ lineHeight: 1 }}>
+          {formatTime(timeRemaining)}
+        </div>
         
         {/* Resize handle - only shown on hover or when actively resizing */}
         {(isHovering || isResizing) && (

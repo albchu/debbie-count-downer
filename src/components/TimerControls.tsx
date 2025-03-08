@@ -54,7 +54,7 @@ export default function TimerControls() {
   const hasVideo = !!videoId;
 
   return (
-    <div className="flex flex-col space-y-6">
+    <div className="flex flex-col space-y-6 p-6 ">
       {/* Duration Slider */}
       <div>
         <label

@@ -14,7 +14,7 @@ export default function CountdownApp() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 p-8 flex flex-col items-center">
+    <div className="min-h-screen text-gray-100 p-8 flex flex-col items-center">
       <header className="w-full max-w-5xl mb-8">
         <div className="flex items-center justify-center">
           {/* Using the favicon SVG directly */}
@@ -37,7 +37,7 @@ export default function CountdownApp() {
         <YouTubeUrlInput youtubeUrl={youtubeUrl} setYoutubeUrl={setYoutubeUrl} />
 
         {/* Responsive container for control panel and video */}
-        <div className="grid grid-cols-1 lg:grid-cols-[20%_80%] gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[20%_80%]">
           <TimerControls />
           
           {/* Video preview - always render the frame */}

@@ -7,6 +7,7 @@ import ControlPanel from '@/components/ControlPanel';
 import { TimerStyle } from '@/types/timer';
 
 export default function Home() {
+  // Video and timer state
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [videoId, setVideoId] = useState('');
   const [minutes, setMinutes] = useState(5);
@@ -14,20 +15,24 @@ export default function Home() {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [embedError, setEmbedError] = useState(false);
   
-  // Timer style control
+  // Timer styling
   const [timerStyle, setTimerStyle] = useState<TimerStyle>({
     fontSize: 24,
     fontFamily: 'sans-serif',
     backgroundOpacity: 70
   });
 
-  // Extract video ID from YouTube URL
+  /**
+   * Extract video ID from YouTube URL
+   */
   const handleUrlChange = (url: string) => {
     setYoutubeUrl(url);
     setEmbedError(false);
+    
     // Parse YouTube URL to get video ID
     const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
     const match = url.match(regex);
+    
     if (match && match[1]) {
       setVideoId(match[1]);
     } else {
@@ -35,7 +40,9 @@ export default function Home() {
     }
   };
 
-  // Toggle play/pause
+  /**
+   * Toggle play/pause state
+   */
   const togglePlayPause = () => {
     if (!videoId) return;
     
@@ -49,13 +56,15 @@ export default function Home() {
     }
   };
 
-  // Reset timer
+  /**
+   * Reset timer to initial state
+   */
   const resetTimer = () => {
     setIsPlaying(false);
     setTimeRemaining(minutes * 60);
   };
 
-  // Timer effect
+  // Timer countdown effect
   useEffect(() => {
     if (!isPlaying || timeRemaining <= 0) return;
     
@@ -70,6 +79,7 @@ export default function Home() {
       });
     }, 1000);
     
+    // Cleanup interval on unmount or state change
     return () => clearInterval(timer);
   }, [isPlaying, timeRemaining]);
 

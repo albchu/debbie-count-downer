@@ -15,9 +15,12 @@ const formatTime = (seconds: number): string => {
 };
 
 // Resize handle component
-const ResizeHandle = ({ onResizeStart, isResizing }: { 
-  onResizeStart: (e: React.MouseEvent) => void,
-  isResizing: boolean 
+const ResizeHandle = ({ 
+  onResizeStart, 
+  isResizing 
+}: { 
+  onResizeStart: (e: React.MouseEvent) => void;
+  isResizing: boolean;
 }) => (
   <div 
     className="resize-handle absolute bottom-0 right-0 w-8 h-8 cursor-se-resize"
@@ -32,8 +35,12 @@ const ResizeHandle = ({ onResizeStart, isResizing }: {
   />
 );
 
-export default function CountdownTimer({ timeRemaining, style, onStyleChange }: CountdownTimerProps) {
-  // State
+export default function CountdownTimer({ 
+  timeRemaining, 
+  style, 
+  onStyleChange 
+}: CountdownTimerProps) {
+  // State management
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
@@ -45,7 +52,9 @@ export default function CountdownTimer({ timeRemaining, style, onStyleChange }: 
   const containerRef = useRef<HTMLDivElement>(null);
   const dragStartPosRef = useRef({ mouseX: 0, mouseY: 0, elemX: 0, elemY: 0 });
   
-  // Calculate optimal font size based on container dimensions
+  /**
+   * Calculate optimal font size based on container dimensions
+   */
   const calculateFontSize = useCallback((width: number, height: number): number => {
     const charCount = 5; // "00:00"
     const widthBasedSize = (width - 16) / charCount * 1.6;
@@ -54,8 +63,11 @@ export default function CountdownTimer({ timeRemaining, style, onStyleChange }: 
     return Math.max(12, Math.min(200, Math.floor(Math.min(widthBasedSize, heightBasedSize))));
   }, []);
 
-  // Event handlers
+  /**
+   * Start dragging the timer
+   */
   const handleDragStart = useCallback((e: React.MouseEvent) => {
+    // Skip if clicking on resize handle
     if ((e.target as HTMLElement).closest('.resize-handle')) return;
     
     e.preventDefault();
@@ -73,6 +85,9 @@ export default function CountdownTimer({ timeRemaining, style, onStyleChange }: 
     setIsDragging(true);
   }, [position]);
   
+  /**
+   * Start resizing the timer
+   */
   const handleResizeStart = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -87,6 +102,9 @@ export default function CountdownTimer({ timeRemaining, style, onStyleChange }: 
     setIsResizing(true);
   }, [size]);
   
+  /**
+   * Handle mouse movement during drag or resize
+   */
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging && !isResizing) return;
     
@@ -118,6 +136,9 @@ export default function CountdownTimer({ timeRemaining, style, onStyleChange }: 
     }
   }, [isDragging, isResizing, size.width, size.height]);
   
+  /**
+   * End dragging or resizing operation
+   */
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
     setIsResizing(false);
@@ -134,7 +155,7 @@ export default function CountdownTimer({ timeRemaining, style, onStyleChange }: 
     }
   }, [size.width, size.height, calculateFontSize, style, onStyleChange]);
   
-  // Mouse event listeners
+  // Add/remove mouse event listeners
   useEffect(() => {
     if (isDragging || isResizing) {
       window.addEventListener('mousemove', handleMouseMove);
@@ -147,7 +168,7 @@ export default function CountdownTimer({ timeRemaining, style, onStyleChange }: 
     };
   }, [isDragging, isResizing, handleMouseMove, handleMouseUp]);
   
-  // Background opacity
+  // Background opacity as decimal value for styling
   const bgOpacity = style.backgroundOpacity / 100;
 
   return (

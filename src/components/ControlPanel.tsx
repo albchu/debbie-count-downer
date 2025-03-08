@@ -1,6 +1,7 @@
 import { TimerStyle } from '@/types/timer';
 import { useId } from 'react';
 import Instructions from './Instructions';
+import FontDropdown from './FontDropdown';
 
 interface ControlPanelProps {
   youtubeUrl: string;
@@ -30,74 +31,42 @@ export default function ControlPanel({
   const selectId = useId();
 
   // Expanded font families list with categorization
-  const fontFamilies = [
-    // Sans-serif fonts
-    { value: 'Arial, sans-serif', label: 'Arial', category: 'Sans-serif' },
-    { value: 'Helvetica, Arial, sans-serif', label: 'Helvetica', category: 'Sans-serif' },
-    { value: 'Verdana, sans-serif', label: 'Verdana', category: 'Sans-serif' },
-    { value: 'Tahoma, sans-serif', label: 'Tahoma', category: 'Sans-serif' },
-    { value: 'Trebuchet MS, sans-serif', label: 'Trebuchet MS', category: 'Sans-serif' },
-    { value: 'system-ui, sans-serif', label: 'System UI', category: 'Sans-serif' },
-    { value: '"Segoe UI", sans-serif', label: 'Segoe UI', category: 'Sans-serif' },
-    { value: '"Open Sans", sans-serif', label: 'Open Sans', category: 'Sans-serif' },
-    { value: 'Roboto, sans-serif', label: 'Roboto', category: 'Sans-serif' },
-    { value: '"Noto Sans", sans-serif', label: 'Noto Sans', category: 'Sans-serif' },
-    
-    // Serif fonts
-    { value: '"Times New Roman", serif', label: 'Times New Roman', category: 'Serif' },
-    { value: 'Georgia, serif', label: 'Georgia', category: 'Serif' },
-    { value: 'Garamond, serif', label: 'Garamond', category: 'Serif' },
-    { value: 'Baskerville, serif', label: 'Baskerville', category: 'Serif' },
-    { value: '"Playfair Display", serif', label: 'Playfair Display', category: 'Serif' },
-    { value: 'Merriweather, serif', label: 'Merriweather', category: 'Serif' },
-    
-    // Monospace fonts
-    { value: '"Courier New", monospace', label: 'Courier New', category: 'Monospace' },
-    { value: '"Lucida Console", monospace', label: 'Lucida Console', category: 'Monospace' },
-    { value: 'Consolas, monospace', label: 'Consolas', category: 'Monospace' },
-    { value: '"Roboto Mono", monospace', label: 'Roboto Mono', category: 'Monospace' },
-    { value: '"Source Code Pro", monospace', label: 'Source Code Pro', category: 'Monospace' },
-    
-    // Display fonts
-    { value: 'Impact, sans-serif', label: 'Impact', category: 'Display' },
-    { value: '"Arial Black", sans-serif', label: 'Arial Black', category: 'Display' },
-    { value: '"Bebas Neue", sans-serif', label: 'Bebas Neue', category: 'Display' },
-    { value: '"Anton", sans-serif', label: 'Anton', category: 'Display' },
-    
-    // Handwriting-style fonts
-    { value: '"Comic Sans MS", cursive', label: 'Comic Sans MS', category: 'Handwriting' },
-    { value: '"Brush Script MT", cursive', label: 'Brush Script MT', category: 'Handwriting' },
-    { value: '"Dancing Script", cursive', label: 'Dancing Script', category: 'Handwriting' },
-    { value: '"Pacifico", cursive', label: 'Pacifico', category: 'Handwriting' }
-  ];
+  const fontCategories = {
+    'Sans-Serif': [
+      { label: 'Arial', value: 'Arial, sans-serif' },
+      { label: 'Helvetica', value: 'Helvetica, sans-serif' },
+      { label: 'Open Sans', value: '"Open Sans", sans-serif' },
+      { label: 'Roboto', value: 'Roboto, sans-serif' },
+      { label: 'Verdana', value: 'Verdana, sans-serif' },
+    ],
+    'Serif': [
+      { label: 'Georgia', value: 'Georgia, serif' },
+      { label: 'Times New Roman', value: '"Times New Roman", serif' },
+      { label: 'Playfair Display', value: '"Playfair Display", serif' },
+    ],
+    'Monospace': [
+      { label: 'Courier New', value: '"Courier New", monospace' },
+      { label: 'Roboto Mono', value: '"Roboto Mono", monospace' },
+      { label: 'Source Code Pro', value: '"Source Code Pro", monospace' },
+    ],
+    'Display': [
+      { label: 'Impact', value: 'Impact, sans-serif' },
+      { label: 'Bebas Neue', value: '"Bebas Neue", sans-serif' },
+      { label: 'Permanent Marker', value: '"Permanent Marker", cursive' },
+    ],
+  };
 
-  // Group fonts by category for the dropdown
-  const fontCategories = fontFamilies.reduce<Record<string, typeof fontFamilies>>((acc, font) => {
-    if (!acc[font.category]) {
-      acc[font.category] = [];
-    }
-    acc[font.category].push(font);
-    return acc;
-  }, {});
-
-  const handleFontSizeChange = (size: number) => {
+  const handleFontFamilyChange = (fontFamily: string) => {
     onTimerStyleChange({
       ...timerStyle,
-      fontSize: size
+      fontFamily,
     });
   };
 
-  const handleFontFamilyChange = (family: string) => {
+  const handleBackgroundOpacityChange = (backgroundOpacity: number) => {
     onTimerStyleChange({
       ...timerStyle,
-      fontFamily: family
-    });
-  };
-
-  const handleBackgroundOpacityChange = (opacity: number) => {
-    onTimerStyleChange({
-      ...timerStyle,
-      backgroundOpacity: opacity
+      backgroundOpacity,
     });
   };
 
@@ -191,36 +160,17 @@ export default function ControlPanel({
           </div>
 
           <div>
-            <label htmlFor={selectId} className="block mb-1 font-medium text-gray-300">Font:</label>
-            <select
-              id={selectId}
+            <label className="block mb-1 font-medium text-gray-300">Font:</label>
+            <FontDropdown 
               value={timerStyle.fontFamily}
-              onChange={(e) => handleFontFamilyChange(e.target.value)}
-              className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              style={{ fontFamily: timerStyle.fontFamily }}
-            >
-              {Object.entries(fontCategories).map(([category, fonts]) => (
-                <optgroup key={category} label={category}>
-                  {fonts.map((font) => (
-                    <option 
-                      key={font.value} 
-                      value={font.value}
-                      style={{ fontFamily: font.value }}
-                    >
-                      {font.label}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-            <div className="mt-3 p-3 bg-gray-700 border border-gray-600 rounded text-white text-center" style={{ fontFamily: timerStyle.fontFamily }}>
-              Sample: 00:00
-            </div>
+              onChange={handleFontFamilyChange}
+              fontCategories={fontCategories}
+            />
           </div>
         </div>
       </div>
       
-      {/* Instructions Container - now using the renamed component */}
+      {/* Instructions Container */}
       <Instructions />
     </div>
   );

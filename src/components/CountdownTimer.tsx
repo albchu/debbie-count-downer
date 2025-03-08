@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTimer } from '@/context/TimerContext';
+import ResizeHandle from './ResizeHandle';
 
 export default function CountdownTimer() {
   const { 
@@ -17,6 +18,7 @@ export default function CountdownTimer() {
   const [resizeDirection, setResizeDirection] = useState('');
   const [initialSize, setInitialSize] = useState({ width: 0, height: 0, fontSize: 0 });
   const [initialPos, setInitialPos] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
   
   const containerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<HTMLDivElement>(null);
@@ -180,6 +182,8 @@ export default function CountdownTimer() {
         }}
         onMouseDown={handleDragStart}
         onTouchStart={handleDragStart}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
       >
         <span className="text-white">{formattedTime}</span>
         
@@ -206,31 +210,8 @@ export default function CountdownTimer() {
           </button>
         </div>
         
-        {/* Resize handles */}
-        <div 
-          className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 opacity-0 hover:opacity-70 rounded-bl"
-          style={{ cursor: 'nwse-resize' }}
-          onMouseDown={(e) => handleResizeStart(e, 'se')}
-          onTouchStart={(e) => handleResizeStart(e, 'se')}
-        />
-        <div 
-          className="absolute bottom-0 left-0 w-4 h-4 bg-blue-500 opacity-0 hover:opacity-70 rounded-br"
-          style={{ cursor: 'nesw-resize' }}
-          onMouseDown={(e) => handleResizeStart(e, 'sw')}
-          onTouchStart={(e) => handleResizeStart(e, 'sw')}
-        />
-        <div 
-          className="absolute top-0 right-0 w-4 h-4 bg-blue-500 opacity-0 hover:opacity-70 rounded-tl"
-          style={{ cursor: 'nesw-resize' }}
-          onMouseDown={(e) => handleResizeStart(e, 'ne')}
-          onTouchStart={(e) => handleResizeStart(e, 'ne')}
-        />
-        <div 
-          className="absolute top-0 left-0 w-4 h-4 bg-blue-500 opacity-0 hover:opacity-70 rounded-tr"
-          style={{ cursor: 'nwse-resize' }}
-          onMouseDown={(e) => handleResizeStart(e, 'nw')}
-          onTouchStart={(e) => handleResizeStart(e, 'nw')}
-        />
+        {/* Single resize handle - south-east corner only */}
+        <ResizeHandle onResizeStart={handleResizeStart} direction="se" isVisible={isHovering} />
       </div>
     </div>
   );

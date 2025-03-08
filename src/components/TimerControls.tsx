@@ -1,13 +1,12 @@
 import FontDropdown from './FontDropdown';
+import PlayControls from './PlayControls';
 import { useTimer } from '@/context/TimerContext';
+import { FONT_CATEGORIES } from '@/constants/fonts';
 
 export default function TimerControls() {
   const { 
     durationSeconds,
     setDurationSeconds,
-    isPlaying, 
-    togglePlayPause, 
-    resetTimer, 
     videoId, 
     timerStyle, 
     setTimerStyle, 
@@ -24,42 +23,9 @@ export default function TimerControls() {
 
   // Handle duration change with 5-second increments
   const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Get value as number
     const value = parseInt(e.target.value, 10);
-    
-    // Round to nearest 5 seconds
     const roundedValue = Math.round(value / 5) * 5;
-    
-    // Update context
     setDurationSeconds(roundedValue);
-  };
-
-  // Font categories for dropdown
-  const fontCategories = {
-    'System': [
-      { label: 'Sans Serif', value: 'sans-serif' },
-      { label: 'Serif', value: 'serif' },
-      { label: 'Monospace', value: 'monospace' }
-    ],
-    'Sans-Serif': [
-      { label: 'Arial', value: 'Arial' },
-      { label: 'Helvetica', value: 'Helvetica' },
-      { label: 'Verdana', value: 'Verdana' },
-      { label: 'Trebuchet MS', value: 'Trebuchet MS' },
-      { label: 'Gill Sans', value: 'Gill Sans' }
-    ],
-    'Serif': [
-      { label: 'Times New Roman', value: 'Times New Roman' },
-      { label: 'Georgia', value: 'Georgia' },
-      { label: 'Garamond', value: 'Garamond' },
-      { label: 'Palatino', value: 'Palatino' }
-    ],
-    'Display': [
-      { label: 'Impact', value: 'Impact' },
-      { label: 'Comic Sans MS', value: 'Comic Sans MS' },
-      { label: 'Copperplate', value: 'Copperplate' },
-      { label: 'Papyrus', value: 'Papyrus' }
-    ]
   };
 
   // Handle style changes
@@ -113,62 +79,8 @@ export default function TimerControls() {
           </div>
         </div>
 
-        {/* Play/Pause and Reset Buttons */}
-        <div className="flex space-x-4">
-          <button
-            onClick={togglePlayPause}
-            disabled={!hasVideo}
-            className={`flex-1 px-4 py-2 rounded font-medium flex items-center justify-center ${
-              hasVideo
-                ? isPlaying
-                  ? 'bg-yellow-500 hover:bg-yellow-600 text-gray-900'
-                  : 'bg-green-500 hover:bg-green-600 text-gray-900'
-                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-            }`}
-          >
-            {isPlaying ? (
-              <>
-                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Pause
-              </>
-            ) : (
-              <>
-                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Start
-              </>
-            )}
-          </button>
-          <button
-            onClick={resetTimer}
-            disabled={!hasVideo}
-            className={`flex-1 px-4 py-2 rounded font-medium flex items-center justify-center ${
-              hasVideo
-                ? 'bg-red-500 hover:bg-red-600 text-white'
-                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-            }`}
-          >
-            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Reset
-          </button>
-        </div>
+        {/* Play/Pause and Reset Controls */}
+        <PlayControls />
 
         {/* Ready Button for entering fullscreen mode */}
         <button
@@ -226,7 +138,7 @@ export default function TimerControls() {
           <FontDropdown 
             value={timerStyle.fontFamily}
             onChange={handleFontFamilyChange}
-            fontCategories={fontCategories}
+            fontCategories={FONT_CATEGORIES}
           />
         </div>
 

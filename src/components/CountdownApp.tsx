@@ -37,16 +37,16 @@ export default function CountdownApp() {
         <YouTubeUrlInput youtubeUrl={youtubeUrl} setYoutubeUrl={setYoutubeUrl} />
 
         {/* Responsive container for control panel and video */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[20%_80%] gap-8">
           <TimerControls />
           
           {/* Video preview - always render the frame */}
           <div className="flex items-start">
-            <div className="w-full relative bg-black rounded-lg overflow-hidden shadow-2xl" style={{minHeight: "240px"}}>
+            <div className="w-full relative bg-black rounded-lg overflow-hidden shadow-2xl aspect-video">
               {videoId ? (
                 <YouTubePlayer />
               ) : (
-                <div className="flex items-center justify-center h-full" style={{minHeight: "240px"}}>
+                <div className="flex items-center justify-center h-full">
                   <p className="text-gray-500">Enter a YouTube URL to preview video</p>
                 </div>
               )}

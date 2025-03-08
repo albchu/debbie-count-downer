@@ -7,7 +7,9 @@ export default function CountdownTimer() {
     timerStyle, 
     setTimerStyle, 
     timerDimensions, 
-    setTimerDimensions 
+    setTimerDimensions,
+    isPlaying,
+    togglePlayPause
   } = useTimer();
   
   const [isDragging, setIsDragging] = useState(false);
@@ -159,7 +161,7 @@ export default function CountdownTimer() {
   return (
     <div 
       ref={containerRef}
-      className="absolute inset-0 overflow-hidden"
+      className="absolute top-0 left-0 right-0 bottom-[16%] overflow-hidden"
     >
       <div 
         ref={timerRef}
@@ -180,6 +182,29 @@ export default function CountdownTimer() {
         onTouchStart={handleDragStart}
       >
         <span className="text-white">{formattedTime}</span>
+        
+        {/* Play/Pause button below the timer */}
+        <div className="flex justify-center mt-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent triggering drag
+              togglePlayPause();
+            }}
+            className="text-white bg-red-600 hover:bg-red-700 rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-red-500"
+            aria-label={isPlaying ? "Pause timer" : "Play timer"}
+          >
+            {isPlaying ? (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            )}
+          </button>
+        </div>
         
         {/* Resize handles */}
         <div 

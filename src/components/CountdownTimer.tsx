@@ -111,6 +111,9 @@ export default function CountdownTimer({ timeRemaining, position, style }: Count
     };
   }, [isDragging, initialPosition]);
 
+  // Calculate background opacity
+  const bgOpacity = style.backgroundOpacity / 100;
+
   const getPositionClasses = (position: TimerPosition) => {
     switch (position) {
       case 'center':
@@ -143,14 +146,16 @@ export default function CountdownTimer({ timeRemaining, position, style }: Count
     <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-none">
       <div
         ref={timerRef}
-        className={`absolute bg-black/70 text-white px-4 py-2 rounded cursor-move pointer-events-auto`}
+        className={`absolute text-white px-4 py-2 rounded cursor-move pointer-events-auto`}
         style={{
           fontSize: `${style.fontSize}px`,
           fontFamily: style.fontFamily,
           zIndex: 10,
           left: `${coords.x}px`,
           top: `${coords.y}px`,
-          userSelect: 'none' // Prevent text selection during drag
+          userSelect: 'none', // Prevent text selection during drag
+          backgroundColor: `rgba(0, 0, 0, ${bgOpacity})`,
+          textShadow: bgOpacity < 0.5 ? '0px 0px 2px rgba(0,0,0,0.8)' : 'none' // Add text shadow for better visibility with low opacity
         }}
         onMouseDown={handleMouseDown}
       >

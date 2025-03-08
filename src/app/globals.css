@@ -1,3 +1,5 @@
+/* Google Fonts imports */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Roboto:wght@400;700&family=Noto+Sans:wght@400;700&family=Playfair+Display:wght@400;700&family=Merriweather:wght@400;700&family=Roboto+Mono&family=Source+Code+Pro&family=Bebas+Neue&family=Anton&family=Dancing+Script&family=Pacifico&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -24,3 +26,4 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+

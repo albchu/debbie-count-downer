@@ -3,4 +3,5 @@ export type TimerPosition = 'center' | 'topLeft' | 'topRight' | 'bottomLeft' | '
 export type TimerStyle = {
   fontSize: number;
   fontFamily: string;
+  backgroundOpacity: number;
 }; 

@@ -18,7 +18,8 @@ export default function Home() {
   const [timerPosition, setTimerPosition] = useState<TimerPosition>('topRight');
   const [timerStyle, setTimerStyle] = useState<TimerStyle>({
     fontSize: 24,
-    fontFamily: 'sans-serif'
+    fontFamily: 'sans-serif',
+    backgroundOpacity: 70
   });
 
   // Extract video ID from YouTube URL

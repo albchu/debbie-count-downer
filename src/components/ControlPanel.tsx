@@ -1,4 +1,5 @@
 import { TimerPosition, TimerStyle } from '@/types/timer';
+import { useId } from 'react';
 
 interface ControlPanelProps {
   youtubeUrl: string;
@@ -29,6 +30,8 @@ export default function ControlPanel({
   timerStyle,
   onTimerStyleChange
 }: ControlPanelProps) {
+  const selectId = useId();
+
   const positions: { value: TimerPosition; label: string }[] = [
     { value: 'center', label: 'Center' },
     { value: 'topLeft', label: 'Top Left' },
@@ -37,16 +40,56 @@ export default function ControlPanel({
     { value: 'bottomRight', label: 'Bottom Right' }
   ];
 
+  // Expanded font families list with categorization
   const fontFamilies = [
-    'sans-serif',
-    'serif',
-    'monospace',
-    'Arial',
-    'Verdana',
-    'Helvetica',
-    'Times New Roman',
-    'Courier New'
+    // Sans-serif fonts
+    { value: 'Arial, sans-serif', label: 'Arial', category: 'Sans-serif' },
+    { value: 'Helvetica, Arial, sans-serif', label: 'Helvetica', category: 'Sans-serif' },
+    { value: 'Verdana, sans-serif', label: 'Verdana', category: 'Sans-serif' },
+    { value: 'Tahoma, sans-serif', label: 'Tahoma', category: 'Sans-serif' },
+    { value: 'Trebuchet MS, sans-serif', label: 'Trebuchet MS', category: 'Sans-serif' },
+    { value: 'system-ui, sans-serif', label: 'System UI', category: 'Sans-serif' },
+    { value: '"Segoe UI", sans-serif', label: 'Segoe UI', category: 'Sans-serif' },
+    { value: '"Open Sans", sans-serif', label: 'Open Sans', category: 'Sans-serif' },
+    { value: 'Roboto, sans-serif', label: 'Roboto', category: 'Sans-serif' },
+    { value: '"Noto Sans", sans-serif', label: 'Noto Sans', category: 'Sans-serif' },
+    
+    // Serif fonts
+    { value: '"Times New Roman", serif', label: 'Times New Roman', category: 'Serif' },
+    { value: 'Georgia, serif', label: 'Georgia', category: 'Serif' },
+    { value: 'Garamond, serif', label: 'Garamond', category: 'Serif' },
+    { value: 'Baskerville, serif', label: 'Baskerville', category: 'Serif' },
+    { value: '"Playfair Display", serif', label: 'Playfair Display', category: 'Serif' },
+    { value: 'Merriweather, serif', label: 'Merriweather', category: 'Serif' },
+    
+    // Monospace fonts
+    { value: '"Courier New", monospace', label: 'Courier New', category: 'Monospace' },
+    { value: '"Lucida Console", monospace', label: 'Lucida Console', category: 'Monospace' },
+    { value: 'Consolas, monospace', label: 'Consolas', category: 'Monospace' },
+    { value: '"Roboto Mono", monospace', label: 'Roboto Mono', category: 'Monospace' },
+    { value: '"Source Code Pro", monospace', label: 'Source Code Pro', category: 'Monospace' },
+    
+    // Display fonts
+    { value: 'Impact, sans-serif', label: 'Impact', category: 'Display' },
+    { value: '"Arial Black", sans-serif', label: 'Arial Black', category: 'Display' },
+    { value: '"Bebas Neue", sans-serif', label: 'Bebas Neue', category: 'Display' },
+    { value: '"Anton", sans-serif', label: 'Anton', category: 'Display' },
+    
+    // Handwriting-style fonts
+    { value: '"Comic Sans MS", cursive', label: 'Comic Sans MS', category: 'Handwriting' },
+    { value: '"Brush Script MT", cursive', label: 'Brush Script MT', category: 'Handwriting' },
+    { value: '"Dancing Script", cursive', label: 'Dancing Script', category: 'Handwriting' },
+    { value: '"Pacifico", cursive', label: 'Pacifico', category: 'Handwriting' }
   ];
+
+  // Group fonts by category for the dropdown
+  const fontCategories = fontFamilies.reduce<Record<string, typeof fontFamilies>>((acc, font) => {
+    if (!acc[font.category]) {
+      acc[font.category] = [];
+    }
+    acc[font.category].push(font);
+    return acc;
+  }, {});
 
   const handleFontSizeChange = (size: number) => {
     onTimerStyleChange({
@@ -59,6 +102,13 @@ export default function ControlPanel({
     onTimerStyleChange({
       ...timerStyle,
       fontFamily: family
+    });
+  };
+
+  const handleBackgroundOpacityChange = (opacity: number) => {
+    onTimerStyleChange({
+      ...timerStyle,
+      backgroundOpacity: opacity
     });
   };
 
@@ -120,23 +170,6 @@ export default function ControlPanel({
           <h2 className="text-lg font-semibold text-white border-b border-gray-700 pb-2">Timer Display</h2>
           
           <div className="flex flex-col">
-            <label htmlFor="timer-position" className="mb-1 font-medium text-gray-300">Initial Position:</label>
-            <select
-              id="timer-position"
-              value={timerPosition}
-              onChange={(e) => onTimerPositionChange(e.target.value as TimerPosition)}
-              className="p-2 bg-gray-700 border border-gray-600 rounded text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
-            >
-              {positions.map((pos) => (
-                <option key={pos.value} value={pos.value}>
-                  {pos.label}
-                </option>
-              ))}
-            </select>
-            <p className="text-sm text-gray-400 mt-1">You can drag the timer to reposition it on the video.</p>
-          </div>
-
-          <div className="flex flex-col">
             <label htmlFor="font-size" className="mb-1 font-medium text-gray-300">Font Size:</label>
             <div className="flex items-center space-x-2">
               <input
@@ -153,19 +186,47 @@ export default function ControlPanel({
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="font-family" className="mb-1 font-medium text-gray-300">Font:</label>
+            <label htmlFor="bg-opacity" className="mb-1 font-medium text-gray-300">Background Opacity:</label>
+            <div className="flex items-center space-x-2">
+              <input
+                type="range"
+                id="bg-opacity"
+                min="0"
+                max="100"
+                value={timerStyle.backgroundOpacity}
+                onChange={(e) => handleBackgroundOpacityChange(parseInt(e.target.value))}
+                className="flex-grow accent-red-500"
+              />
+              <span className="font-medium text-white">{timerStyle.backgroundOpacity}%</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor={selectId} className="mb-1 font-medium text-gray-300">Font:</label>
             <select
-              id="font-family"
+              id={selectId}
               value={timerStyle.fontFamily}
               onChange={(e) => handleFontFamilyChange(e.target.value)}
               className="p-2 bg-gray-700 border border-gray-600 rounded text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              style={{ fontFamily: timerStyle.fontFamily }}
             >
-              {fontFamilies.map((font) => (
-                <option key={font} value={font}>
-                  {font}
-                </option>
+              {Object.entries(fontCategories).map(([category, fonts]) => (
+                <optgroup key={category} label={category}>
+                  {fonts.map((font) => (
+                    <option 
+                      key={font.value} 
+                      value={font.value}
+                      style={{ fontFamily: font.value }}
+                    >
+                      {font.label}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
+            <div className="mt-3 p-3 bg-gray-700 border border-gray-600 rounded text-white text-center" style={{ fontFamily: timerStyle.fontFamily }}>
+              Sample: 00:00
+            </div>
           </div>
         </div>
       </div>

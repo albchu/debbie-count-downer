@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import YouTubePlayer from '@/components/YouTubePlayer';
 import CountdownTimer from '@/components/CountdownTimer';
 import ControlPanel from '@/components/ControlPanel';
@@ -109,9 +110,20 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-8 flex flex-col items-center">
       <header className="w-full max-w-3xl mb-8">
-        <h1 className="text-4xl font-bold text-center text-white">
-          YouTube <span className="text-red-500">Countdown</span> Timer
-        </h1>
+        <div className="flex items-center justify-center">
+          {/* Using the favicon SVG directly */}
+          <Image
+            src="/favicon.svg"
+            alt="Countdowner Logo"
+            width={48}
+            height={48}
+            className="mr-4"
+          />
+          <h1 className="text-4xl font-bold text-white inline-flex items-baseline">
+            <span className="text-cyan-700">Count</span>
+            <span className="text-violet-400">downer</span>
+          </h1>
+        </div>
       </header>
 
       <main className="w-full max-w-3xl flex flex-col gap-8">

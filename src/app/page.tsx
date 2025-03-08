@@ -74,10 +74,10 @@ export default function Home() {
   }, [isPlaying, timeRemaining]);
 
   return (
-    <div className="min-h-screen p-8 flex flex-col items-center">
+    <div className="min-h-screen bg-gray-900 text-gray-100 p-8 flex flex-col items-center">
       <header className="w-full max-w-3xl mb-8">
-        <h1 className="text-3xl font-bold text-center">
-          YouTube Countdown Timer
+        <h1 className="text-4xl font-bold text-center text-white">
+          YouTube <span className="text-red-500">Countdown</span> Timer
         </h1>
       </header>
 
@@ -98,7 +98,7 @@ export default function Home() {
         />
 
         {videoId && (
-          <div className="w-full relative">
+          <div className="w-full relative bg-black rounded-lg overflow-hidden shadow-2xl">
             <YouTubePlayer
               videoId={videoId}
               onError={() => setEmbedError(true)}
